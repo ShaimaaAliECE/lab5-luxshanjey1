@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store</title>
+</head>
+<body>
+    <h1> Welcome to our store</h1>
+    <a href='javascript:getProducts()'> Click here to see list of products</a>
+    <div id='prodDiv'></div>
+
+</body>
+
+<script>
+    function getProducts()
+    {   //'/products'
+        let xReq = new XMLHttpRequest();
+        xReq.onreadystatechange = displayProducts;
+
+        xReq.open('GET','/productsInJson',true);
+        xReq.send();
+    }
+
+    function displayProducts()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            let prodDiv = document.getElementById('prodDiv');
+            //prodDiv.innerHTML = this.responseText;
+            let productList = JSON.parse(this.responseText);
+            let content ='';
+            for (p of productList)
+            {
+                content += '<div>';
+                content += p.desc + ":" + p.price 
+                content += ` <a href='/prod-img?path=${p.imgPath}&desc=${p.desc}'> See Image</a>`
+                content += '</div>'
+                content += '\n';
+            }
+            prodDiv.innerHTML = content;
+           // console.log(typeof JSON.parse(this.responseText))
+        }
+    }
+
+</script>
+</html>

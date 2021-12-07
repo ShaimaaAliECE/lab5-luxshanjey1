@@ -1,5 +1,5 @@
 const express = require('express');
-let jobList = require('./jobs.json');
+var jobList = require('./jobs.json');
 
 const app = express();
 
@@ -25,24 +25,33 @@ app.get('/jobs', (request, response) => {
 
 // RESTful APIs for Inventory
 
-app.get('/productsInJson', (req,res) => {
+app.get('/jobsInJson', (req,res) => {
   //  res.send(JSON.stringify(productList));
     res.json(jobList);
 })
 
-app.get('/checkAvailability', (req,res) => {
-   //find the product based on the desc
-   let prodAvailable = false;
-   for (let p of jobList)
+app.get('/checkCity', (req,res) => {
+   //find the job based on the city
+   let jobAvailable = false;
+   jobs = Object.keys(jobList);
+   for (j=0; j<jobs.length; j++)
    {
-       if (p.desc == req.query.desc && p.qty > 0)
-       {
-            prodAvailable = true;
-            break;
+       temp = jobs[j]
+       
+       startCity= jobList[temp].title.lastIndexOf("(")
+       endCity = jobList[temp].title.lastIndexOf(",")
+       if(endCity < startCity){
+           endCity = jobList[temp].title.lastIndexOf(")")
        }
+       console.log(jobList[temp].title.substring(startCity + 1, endCity));
+    //    if (jobList.jobs[j]== req.query.title)
+    //    {
+    //         jobAvailable = true;
+    //         break;
+    //    }
+    res.send(jobList[temp].title.substring(startCity + 1, endCity));
    }
    
-   res.send(JSON.stringify({available:prodAvailable}));
 })
 
 app.get('/:desc', (req,res) => {
@@ -164,4 +173,4 @@ app.get('/reduceProduct/:desc', (req, res) => {
     res.json({successfull: false})
 })
 */
-app.listen(2000);
+app.listen(3000);

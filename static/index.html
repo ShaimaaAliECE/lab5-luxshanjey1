@@ -14,24 +14,24 @@
 </body>
 
 <script>
-    function getProducts()
+    function getJobs()
     {   //'/products'
         let xReq = new XMLHttpRequest();
-        xReq.onreadystatechange = displayProducts;
+        xReq.onreadystatechange = displayJobs;
 
-        xReq.open('GET','/productsInJson',true);
+        xReq.open('GET','/jobsInJson',true);
         xReq.send();
     }
 
-    function displayProducts()
+    function displayJobs()
     {
         if (this.readyState == 4 && this.status == 200)
         {
             let prodDiv = document.getElementById('prodDiv');
             //prodDiv.innerHTML = this.responseText;
-            let productList = JSON.parse(this.responseText);
+            let jobList = JSON.parse(this.responseText);
             let content ='';
-            for (p of productList)
+            for (p of jobList)
             {
                 content += '<div>';
                 content += p.desc + ":" + p.price 

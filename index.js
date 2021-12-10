@@ -7,22 +7,6 @@ app.use(express.urlencoded({extended:true}))
 // serve static contents
 app.use(express.static('static'));
 
-// dynamic handling
-
-app.get('/jobs', (request, response) => {
-    let content ='';
-    for (p of jobList)
-    {
-        content += '<div>';
-        content += p.desc + ":" + p.price 
-        content += ` <a href='/prod-img?path=${p.imgPath}&desc=${p.desc}'> See Image</a>`
-        content += '</div>'
-        content += '\n';
-    }
-
-    response.send(content);
-})
-
 // RESTful APIs for Inventory
 
 app.get('/jobsInJson', (req,res) => {
@@ -30,50 +14,85 @@ app.get('/jobsInJson', (req,res) => {
     res.json(jobList);
 })
 
+//1.categories mentioned in all the jobs and how many times 
+app.get('/totalCategories', (req, res) => {
+    let categories = {};
+
+    for (j in jobList){
+        for(c of jobList[j].categories){
+            if(c in categories){
+                categories[c]++;
+            }
+            else{
+                categories[c] = 1;
+            }
+        }
+    }
+
+    res.send(JSON.stringify(categories));
+});
+
+//2.All Jobs in a given category sent as a paramater
+app.get('/jobInCat/:category', (req,res) => {
+    let jobInCat = {};
+
+    for (j in jobList){
+        for(c of jobList[j].categories){
+            if (req.params.category == c){
+                jobInCat[j] = jobList[j];
+            }
+        }
+    }
+
+    res.send(jobInCat);
+});
+
+//3.All Jobs in a given city sent in the querystring
 app.get('/checkCity', (req,res) => {
    //find the job based on the city
-   let jobAvailable = false;
-   jobs = Object.keys(jobList);
-   for (j=0; j<jobs.length; j++)
-   {
-       temp = jobs[j]
+//    jobs = Object.keys(jobList);
+//    for (j=0; j<jobs.length; j++)
+//    {
+//        temp = jobs[j]
+//        list =[]
        
-       startCity= jobList[temp].title.lastIndexOf("(")
-       endCity = jobList[temp].title.lastIndexOf(",")
-       if(endCity < startCity){
-           endCity = jobList[temp].title.lastIndexOf(")")
-       }
-       console.log(jobList[temp].title.substring(startCity + 1, endCity));
-    //    if (jobList.jobs[j]== req.query.title)
-    //    {
-    //         jobAvailable = true;
-    //         break;
-    //    }
-    res.send(jobList[temp].title.substring(startCity + 1, endCity));
-   }
+//        startCity= jobList[temp].title.lastIndexOf("(")
+//        endCity = jobList[temp].title.lastIndexOf(",")
+//        if(endCity < startCity){
+//            endCity = jobList[temp].title.lastIndexOf(")")
+//        }
+//        city = jobList[temp].title.substring(startCity + 1, endCity);
+//        if(city == req.query.city){
+//             list.push(jobList[temp])
+//        }
+//    }
+//    console.log(city)
+//    res.send(JSON.stringify(list));
+let city = {};
+
+    for (j in jobList){
+        if(jobList[j].title.includes(req.query.city)){
+            city[j] = jobList[j];
+        }
+    }
+
+    res.send(JSON.stringify(city));
    
 })
 
-app.get('/:desc', (req,res) => {
-   let index = jobList.findIndex((p) => p.desc == req.params.desc )
+//2.All Jobs in a given category sent as a paramater
+app.get('/jobInCat/:category', (req,res) => {
+    let jobInCat = {};
 
-   if (index != -1)
-        res.json(jobList[index]);
-    else
-        res.json({});
-});
-
-app.get('/reduceProduct/:desc' , (req,res) => {
-    let index = jobList.findIndex((p) => p.desc == req.params.desc )
-    let confirm = false;
-    if (index != -1)
-        {
-            jobList[index].qty --;
-            confirm = true;
-            console.log(jobList[index].qty);
+    for (j in jobList){
+        for(c of jobList[j].categories){
+            if (req.params.category == c){
+                jobInCat[j] = jobList[j];
+            }
         }
-    
-     res.json({successful : confirm});
+    }
+
+    res.send(jobInCat);
 });
 
 
